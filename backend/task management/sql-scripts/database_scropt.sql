@@ -1,0 +1,49 @@
+CREATE DATABASE IF NOT EXISTS task_management;
+USE task_management;
+
+CREATE TABLE users (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(100) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE roles (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(50) NOT NULL UNIQUE -- e.g., ROLE_ADMIN, ROLE_USER
+);
+
+CREATE TABLE user_roles (
+  user_id BIGINT,
+  role_id BIGINT,
+  PRIMARY KEY (user_id, role_id),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
+);
+
+CREATE TABLE status (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(50) NOT NULL UNIQUE -- e.g., TODO, IN_PROGRESS, DONE
+);
+
+CREATE TABLE priority (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  level VARCHAR(50) NOT NULL UNIQUE -- e.g., LOW, MEDIUM, HIGH
+);
+CREATE TABLE tasks (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  description TEXT,
+  status_id INT,
+  priority_id INT,
+  creator_id BIGINT,
+  assignee_id BIGINT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (status_id) REFERENCES status(id),
+  FOREIGN KEY (priority_id) REFERENCES priority(id),
+  FOREIGN KEY (creator_id) REFERENCES users(id),
+  FOREIGN KEY (assignee_id) REFERENCES users(id)
+);
+INSERT INTO roles (name) VALUES ('ROLE_ADMIN'), ('ROLE_USER'), ('ROLE_SUPER');
+INSERT INTO status (name) VALUES ('TODO'), ('IN_PROGRESS'), ('COMPLETED');
+INSERT INTO priority (level) VALUES ('LOW'), ('MEDIUM'), ('HIGH');
